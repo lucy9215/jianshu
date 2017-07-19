@@ -90,20 +90,24 @@ Compute the gradient(导数) of cost function, tune learning rate(alpha) to find
 #### More advanced optimization 
 
 事实上很多优化的算法已经有现成的函数了, 那么given theta, we can compute:
+
 - Cost: J_theta (a real number)
 - Gradient of J_theta by theta: gradient (a n*1 vector)
 
 Optimization algorithms:
+
 - Gradient descent
 - Conjugate gradient
 - BFGS
 - L-BFGS
 
 Advantages:
+
 - No need to manually pick learning rate(alpha).
 - Often faster than gradient descent.
 
-Disadvantages:
+Disadvantages:  
+
 - more complex
 
 In matlab, write a function to compute cost and gradient:
@@ -173,6 +177,54 @@ With `J` and `gradient` you can solve this optimization problem using advanced o
 
 ## Neural Networks - Non linear hypotheses
 
+### Model representation 
+
+Parameters:
+
+- Input layer: \\(x_{m\*1}\\), a vector contains m features.
+- Hidden layer: \\(a^{(j)}\_{s\_j\*1}\\), layer j has \\(s_j\\) features. And it has a intercept feature \\(a^{(j)}\_{0}=1\\). 因此其实有\\(s_j+1\\)个node, 也需要\\(s_j+1\\)个对应的weights.
+- \\(\Theta^{(j)}\_{s\_{j+1}\*(s_j+1)}\\) 每layer都有一个weights matrix(j), 将\\(a^{(j)}\\)映射到\\(a^{(j+1)}\\). Size：\\(s\_{j+1}\*(s_j+1)\\), 由于每层input包含了intercept: \\(a^{(j)}\_0\\), 故一共是\\(s_j+1\\)维。输出到\\(a^{(j+1)}\\) 则有\\(s\_{j+1}\\)维。
+
+Model: forward propogation(3 layer example, 1 input, 1 hidden, 1 output)
+
+```matlab
+% Add ones(intercept term) to the X data matrix
+A1 = [ones(m, 1) X]; % input layer
+Z2 = Theta1*A1'; 
+A2 = [ones(m,1) sigmoid(Z2)']; % hidden layer
+Z3 = Theta2*A2';
+A3 = sigmoid(Z3)'; % output layer
+```
+
+### Objective/Cost function
+
+#### Back propagation 
+
+与logistic regression一致, cost function是maximum likelihood estimation, 由于是multi-class, 故还需要将每个class的cost都加起来。
+
+```matlab
+y_one_hot = ind2vec(y')';
+
+J = mean(sum((-y_one_hot.*log(A3)-(1-y_one_hot).*log(1-A3)),2))...
+    + lambda/(2*m)*(sum(sum(Theta1(:,2:end).^2))+sum(sum(Theta2(:,2:end).^2)));
+```
+
+#### Gradient
+
+```matlab
+delta3 = A3 - y_one_hot;
+%delta2 = delta3*Theta2.*A2.*(1-A2);
+delta2 = delta3*Theta2(:,2:end).*sigmoidGradient(Z2'); %A2.*(1-A2);
+
+Delta2 = delta3'*A2;
+%Delta1 = delta2(:,2:end)'*A1;
+Delta1 = delta2'*A1; %delta2(:,2:end)'*A1;
+
+Theta2_grad(:, 2:end) = (1/m)*(Delta2(:, 2:end) + lambda*Theta2(:, 2:end));
+Theta2_grad(:, 1) = (1/m)*Delta2(:, 1);
+Theta1_grad(:, 2:end) = (1/m)*(Delta1(:, 2:end) + lambda*Theta1(:, 2:end));
+Theta1_grad(:, 1) = (1/m)*Delta1(:, 1);
+```
 
 
 
