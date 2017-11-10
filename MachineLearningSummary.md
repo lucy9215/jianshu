@@ -1,8 +1,8 @@
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
 
-
 # Machine Learning Summary 
 
+[持续更新中...]
 
 [TOC]
 
@@ -20,24 +20,57 @@
 
 ## Machine Learning Specialization
 
+**Foundation:**
+
+- Regression: predicting house price
+- Classification: restaurant review 
+- Clustering: wiki document retrieval
+- Recommender system: song recommender (popularity vs item similarity)
+- Deep Learning: deep learning features for classification and image retrieval. 
+
+**Regression:**
+
+- Simple regression   
+- Multiple regression  
+- Polynomial regression    
+- Ridge regression(l2 norm)  
+- Lasso regression(l1 norm) 
+- Local regression(k nearest neighbor regression)
+
+**Classification:**  
+
+- Linear classifier(regression with threshold)
+- Decision tree  
+- Boosting 
+- Precision and recall  
+
+**Clustering:**
+
+- Nearest neighbor(features and metric)   
+- Nearest neighbor(locality sensitive hashing, reducing comparisons)  
+- K-means with text data
+- Gaussian mixture model(mixed membership)
+- Gaussian mixture model with diagonal covariance(mixed membership)  
+- Latent Dirichlet Allocation for Text Data  
+- Hierarchical Clustering  
+
+
 ## Machine Learning
 
-- ex1 Linear Regression (Lecture2,4)     3 Linear Algbra Review 5 Octave Tutorial)
+- ex1 Linear Regression (Lecture2,4) (Note: Lecture 3 Linear Algbra Review; Lecture 5 Octave Tutorial)
 - ex2 Logistic Regression (Lecture6,7 )
 - ex3 Multi-class Classification and Neural Networks (Lecture8)
 - ex4 Neural Networks Learning (Lecture9)
-- ex5 Regularized Linear Regression and Bias v.s. Variance
+- ex5 Regularized Linear Regression and Bias vs. Variance
 - ex6 Support Vector Machines (Lecture12)
-- ex7 K-means (Lecture13)
-- Dimension Reduction (Lecture14)
-- Anormaly Detction (Lecture15)
-- Recommender System(Lecture16)
+- ex7 K-means (Lecture13) and Dimension Reduction (Lecture14)
+- ex8 Anormaly Detction (Lecture15) and Recommender System(Lecture16)
 - Large Scale Machine Learning (Lecture17)
 - Photo OCR (Lecture18)
 
 # Regression
 
-Regrassion predict连续的输出。 
+Regression predict连续的输出。 
 
 ## Linear Regression
 
@@ -53,9 +86,9 @@ In matlab code:
 y = X*theta
 ```
 
-- feature X, Size m*n, m is the number of data points, n is the number of feature.  
-- label y, Size m*1, label of m data points. 
-- weights theta, Size n*1, 
+- feature X, Size `m*n`, m is the number of data points, n is the number of feature.  
+- label y, Size `m*1`, label of m data points. 
+- weights theta, Size `n*1`, 
 
 Regression就是在已知数据集feature矩阵(X)和数据label(y)的情况下估计feature的weights(theta). 即已知X,y,求解最fit数据集的theta。有了theta, 就能对数据集中的training example，如X(i,:), 做出估计的label值y, 估计的y也常表示为\\( \hat{y}\\). 
 
@@ -112,7 +145,7 @@ Compute the gradient(导数) of cost function, tune learning rate(alpha) to find
 事实上很多优化的算法已经有现成的函数了, 那么given theta, we can compute:
 
 - Cost: J_theta (a real number)
-- Gradient of J_theta by theta: gradient (a n*1 vector)
+- Gradient of J_theta by theta: gradient (a `n*1` vector)
 
 Optimization algorithms:
 
@@ -280,7 +313,7 @@ SVM一直对我来说有些神秘，在ng的课程里讲了一部分，具体的
 ![](svmLectureSlides_kernel.jpg)
 在构建非线性的分类器时，我们曾经用高阶的feature(x^2, x^3等)，有时候这些高阶的函数不能很好的描述我们的feature，并且也computationally expensive。这里谈的kernel/similarity function就可以作为SVM的另一种feature。为什么kernel feature不用于logistic regression呢？因为computational tricks that apply for SVM does not generalize well to other algorithms like logistic regression. 所以logistic regression使用kernel计算缺少优化速度会很慢，所以kernel与SVM比较搭。
 
-假设我们有三个landmarks，分别是l(1), l(2), l(3)，如左下slide，用样本与三个landmark的Gaussian similarity作为feature，就能得到右上的比较复杂的非线性decision boundary。对于SVM，landmark的选取是直接将每一个样本作为kernel，于是样本数m与feature数n相等。
+假设我们有三个landmarks，分别是l(1), l(2), l(3)，如左下slide，用样本与三个landmark的Gaussian similarity作为feature，就能得到右上的比较复杂的非线性decision boundary。对于SVM，landmark的选取是直接将每一个样本作为一个landmark，于是样本数m与feature数n相等。
 
 一个valid kernel需要满足“Mercer‘s Theorem”，除了No kernel(linear kernel)和Gaussian kernel，其他kernel事实上用的很少，other valid kernel you may run across are:
 
@@ -337,16 +370,17 @@ Otherwise, use one-vs.-all method.
 - 其实最后还是要看目的来选k值
 
 ## Dimention Reduction
-### Singular Value Decomposition(SVD, 奇异值分解)
+### Singular Value Decomposition
 降维就是要做Principal Components Analysis(PCA, 主成分分析)，用到的数学就是Singular Value Decomposition(SVD, 奇异值分解)。奇异值分解就是将一个大矩阵分解成三个矩阵相乘，详细一点的解释可以参看[这篇文章](http://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html)
 
 一般情况下m!=n，分解的式子如下:
 \\(A_{m\*n}=U_{m\*m}\Sigma_{m\*m}V_{n\*n}^{T}\\)
-分解后的\\(V^{T}\\)的列向量v满足\\((A^{T}A)v=\lambda v\\)
+分解后的\\(V^{T}\\)的列向量v满足\\((A^{T}A)v=\lambda v\\)  
+即V的每行是特征向量  
 
 对于方阵(m==n)的特殊情况有:
 \\(A_{n\*n}=Q_{n\*n}\Sigma_{n\*n}Q_{n\*n}^{-1}\\)
-即\\(U=V^{-1}=Q\\), U*V会得到单位矩阵, Q中的每一列是矩阵的特征向量(eigenvector)，满足\\(A_{n\*n}v_{n\*1}=\lambda v_{n\*1}\\)。
+即\\(U=V^{-1}=Q\\), `U*V`会得到单位矩阵, Q中的每一列是矩阵的特征向量(eigenvector)，满足\\(A_{n\*n}v_{n\*1}=\lambda v_{n\*1}\\)。
 
 
 分解后的矩阵\\(\Sigma\\)是一个只有对角线有值的对角矩阵，对角线取值由大到小排列，这里的值分别对应了U的列以及\\(V^T\\)的列的权重，故只要取权重最大的特征值就能提取主要特征。
@@ -355,16 +389,16 @@ Otherwise, use one-vs.-all method.
 那么保留的百分比就是对角矩阵对角向量前k个值的和与所有值的和之比。
 
 
->Note: 在用于压缩的时候，ex7在svd前并不是直接分解的\\(A_{m\*n}\\)而是取了\\(A^{T}A\\)分解以后的U矩阵，其实这与直接分解A取V是一样的，在matlab中可以看到两者结果基本差不多，数值上和向量的方向上会有一些差别，但不是很大。
+>Note: 在用于压缩的时候，ex7在svd前并不是直接分解的\\(A_{m\*n}\\)而是取了\\(A^{T}A\\)分解以后的U矩阵，其实这与直接分解A取V是一样的，在matlab中可以看到两者结果基本差不多，数值上和向量的方向上会有一些差别，但不是很大。同时，由于\\(A^{T}A\\)，就是A的cov矩阵，最后求得的特征向量矩阵V满足\\( V=V^T \\)
 
-### Dimention Reduction and Reconstruction 降维与重构
-投影和恢复可以用下面这两个式子，由于U，V都是正交矩阵，有\\(U^T=U^{-1}\\)，故有：
+### Dimention Reduction and Reconstruction 
+降维与重构可以用下面这两个式子，由于U，V都是正交矩阵，有\\(U^T=U^{-1}\\)，故有：
 压缩列：\\(A_{m\*n}V_{n\*k}\approx U_{m\*k}\Sigma_{k\*k}\\)
 压缩行：\\(U_{k\*m}^TA_{m\*n}\approx \Sigma_{k\*k}V_{k\*n}^{T}\\)
 
 > 除了压缩和可视化，SVD还可以用于粗略的分类，用文本和bag of words矩阵进行分解，可以得到词和语义类矩阵以及文本和主题矩阵(即U,V两个矩阵)，可以一次分解得到两者的分类。
 
-### Advice for applying PCA 使用PCA的建议
+### Advice for applying PCA 
 - 压缩
     - 节省存储
     - speed up supervised learning algorithm, 压缩feature再训练，但是这么做**不能prevent overfitting!**
@@ -379,8 +413,8 @@ Otherwise, use one-vs.-all method.
 ### Algorithm
 每个feature都有一定的分布，用高斯分布来估计这个分布，假设每个feature不相关，即假设feature的value是服从高斯分布并且相互独立的，估计出参数：
 
-- \\(\mu_{n*1}\\) 每个feature的期望值
-- \\(\sigma_{n*1}\\) 每个feature的sigma
+- \\(\mu_{n\*1}\\) 每个feature的期望值
+- \\(\sigma_{n\*1}\\) 每个feature的sigma
 
 得到模型参数就能计算新样本的概率p，并根据p来预测。详见slide左1
 ### How to Split Your Data 
@@ -396,8 +430,8 @@ Otherwise, use one-vs.-all method.
 
 
 # Recommender System
-对于推荐系统，我们考虑一个num_movie*num_user的评分矩阵，上面有用户的rating和未知的rating。这个问题其实是一个回归问题的加强版，由一个theta向量升级为Theta矩阵。
-考虑预测一个user对未知movie的rating`y`，我们如果知道movie的feature matrix`x`，根据用户rate过的movie可以训练一个用户偏好`theta`，有`y = X*theta`。这样就与我们之前的回归问题没有差别。在多用户的情况下，无非是写成`Y = X* Theta'`
+对于推荐系统，我们考虑一个`num_movie*num_user`的评分矩阵，上面有用户的rating和未知的rating。这个问题其实是一个回归问题的加强版，由一个theta向量升级为Theta矩阵。
+考虑预测一个user对未知movie的rating`y`，我们如果知道movie的feature matrix`x`，根据用户rate过的movie可以训练一个用户偏好`theta`，有`y = X*theta`。这样就与我们之前的回归问题没有差别。在多用户的情况下，无非是写成`Y = X*Theta'`
 
 参数：
 
@@ -469,19 +503,22 @@ end
 
 
 # Photo OCR
-
+![](photoOCRLectureSlides.jpg)
 该例子讲了图像文字识别的一个应用并给出了项目上的一些方法和建议。如果我们要在图像上识别行人和文字块，可以用不同大小的矩形进行sliding window扫描，来捕捉行人和文字。
-就文字来说，将检测到的positive进行expand，形成文字区域，然后进行文字识别，流程如下：
+就文字来说，将检测到的positive window进行expand，形成文字区域，然后进行文字识别，流程如下：
 
-Text detection --> Character segmentation --> Character classification
+`Text detection -> Character segmentation -> Character classification`
 
 要做到以上的分类，需要训练多个分类器，那么自然也需要很多data，有时候可以进行人工合成(Artficial data synthesis)来节省搜集数据的时间。
-例如文字可行的方法有扭曲图像，但是添加背景噪声和图像明暗就没有那么好的效果了。
+例如图像文字识别可行的方法有扭曲图像，但是添加背景噪声和图像明暗就没有那么好的效果了。
 
 项目的pipeline形成后，想要提升系统的整体表现，可以用ceiling analysis来寻找还需优化的环节
 就是假设该环节准确率达到100%，系统的整体性能会提升多少？
 选择对整体系统性能提升最明显的环节去花精力。
 
+
+# Resources 
+[official github page](https://github.com/learnml/machine-learning-specialization)
 
 
 
